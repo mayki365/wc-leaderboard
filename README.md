@@ -4,6 +4,11 @@
 LeaderBoard library contains an awesome LeaderBoard class implementation.
 
 The library stores the matches results in an in-memory sorted collection and has the following properties:
+* Contains singleton implementation with factory pattern generation.
+* Thread-safe access to public functions.
+* Implemented tests.
+
+# Features
 
 The scoreboard supports the following operations:
 * Start a new match, assuming initial score 0 – 0 and adding it the scoreboard.  
@@ -17,7 +22,20 @@ The scoreboard supports the following operations:
   same total score will be returned ordered by the most recently started match in the  
   scoreboard.
 
+# Key assumptions
+
+I assume that majority of the access calls will be requesting the leaderboard results with occasional updates 
+when a team scores or a match finishes. Add, update, remove match operations have complexity O(log(n)) and 
+retrieval is O(n) as we are just listing all entries. 
+
+Solution is storing the results in a sorted data structure which means that 
+adding and updating matches keeps them sorted in the requested order.
+
+I am returning leaderboard as a copy to prevent exposing the internal structure from the external world.
+
 # Dependencies
+
+Java 21 LTS is required to be installed on the DEV machine. Installed versions can be managed by SDK manager (https://sdkman.io).
 
 Core of the solution is implemented with Core Java functionalities. Development dependencies are managed by Maven and are specified in the pom.xml. We are just using the JUnit 5 test framework and Jetbrains Annotations library. The Annotations library allows us explicitly declaring the nullability of elements, the code becomes easier to maintain and less prone to nullability-related errors.
 
@@ -27,9 +45,12 @@ During the development I used IntelliJ IDEA IDE which uses Jetbrains annotation 
 
 Apache Maven is used as a build tool.
 
-Building the libary is simple, just run:
+Building the library is simple, just run:
 ```
-maven clean package
+# package JAR
+mvn clean package
+# execute tests
+mvn clean test
 ```
 This will compile and package Java code and create a "target" folder which contains:
 
@@ -38,6 +59,7 @@ This will compile and package Java code and create a "target" folder which conta
 * Java bytecode and intermediate build and test files
 
 # Using the library
+
 ```
 import static com.sportradar.wc.CountryEnum.*;
 import com.sportradar.wc.LeaderBoard;
@@ -55,9 +77,4 @@ public class Main {
     }
 }
 // outputs: [MatchEntry[homeTeam=SLOVENIA, awayTeam=SERBIA, homeScore=3, awayScore=0], MatchEntry[homeTeam=CROATIA, awayTeam=SERBIA, homeScore=0, awayScore=2]]
-```
-
-This will produce the following output:
-```
-[MatchEntry[homeTeam=CROATIA, awayTeam=SERBIA, homeScore=0, awayScore=2], MatchEntry[homeTeam=SLOVENIA, awayTeam=SERBIA, homeScore=2, awayScore=0]]
 ```
